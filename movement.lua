@@ -125,6 +125,3 @@ end
 function Right()
     turtle.turnRight()
 end
- 
-TurnTo(directions.south)
-printPos()
