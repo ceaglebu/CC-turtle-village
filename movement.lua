@@ -126,6 +126,5 @@ function Right()
     turtle.turnRight()
 end
  
-UpdatePos({x = 0, y = 0, z = 0, dir = directions.north})
 TurnTo(directions.south)
 printPos()
