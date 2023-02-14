@@ -54,7 +54,7 @@ function SetPosDir(dir)
     UpdatePos(pos)
 end
 
-local function printPos()
+function PrintPos()
     pos = GetPos()
     print("X: ",pos.x)
     print("Y: ",pos.y)
