@@ -1,23 +1,49 @@
-fs.makeDir("temp")
- 
+--[[
+    movement.lua
+    2/14/22
+
+    This header file introduces better movement functions that allow
+    for a turtle's position and fuel level to be saved in temporary 
+    files.
+]]
+
+------------
+-- Config --
+------------
+
+stateFiles = {
+    position = ".pos",
+    fuel = ".fuel"
+}
+
+---------------
+-- Constants --
+---------------
+
 directions = {
     north = 0, east = 1, south = 2, west = 3
 }
- 
+
 moves = {
     forward = 1, backward = -1,
     up = 2, down = -2
 }
- 
+
+-----------------
+-- I/O Control --
+-----------------
+
+-- Writes a position to the position statefile
 function UpdatePos(pos)
-    local file = fs.open("temp/state", "w")
+    local file = fs.open(stateFiles.position, "w")
     file.writeLine(string.format("%d %d %d %d", pos.x, pos.y, pos.z, pos.dir))
     file.close()
     return true
 end
- 
+
+-- Retrieves turtle's current position from position statefile.
 function GetPos()
-    local file = fs.open("temp/state", "r")
+    local file = fs.open(stateFiles.position, "r")
     local line = file.readLine()
     local pos = {}
     pos.x, pos.y, pos.z, pos.dir = line:match("(%S+) (%S+) (%S+) (%S+)")
@@ -26,10 +52,11 @@ function GetPos()
     end 
     return pos
 end
- 
+
+-- Updates the turtle's position based on the direction it moves.
 function MovePos(move)
     local newPos = GetPos()
- 
+
     if move == moves.forward or move == moves.backward then  
         local dir = newPos.dir
         local update = (move == moves.forward and 1 or -1)
@@ -48,55 +75,48 @@ function MovePos(move)
     return UpdatePos(newPos)
 end
 
-function SetPosDir(dir)
-    pos = GetPos()
-    pos.dir = dir
-    UpdatePos(pos)
+-- Redundant functions for easier access to individual position elements
+function setPosX(x)
+    local pos = GetPos()
+    pos.x = x
+    return UpdatePos(pos)
 end
 
-local function printPos()
-    pos = GetPos()
+function setPosY(y)
+    local pos = GetPos()
+    pos.y = y
+    return UpdatePos(pos)
+end
+
+function setPosZ(z)
+    local pos = GetPos()
+    pos.z = z
+    return UpdatePos(pos)
+end
+
+function SetPosDir(dir)
+    local pos = GetPos()
+    pos.dir = dir
+    return UpdatePos(pos)
+end
+
+-- Print the position for debugging purposes
+function PrintPos()
+    local pos = GetPos()
     print("X: ",pos.x)
     print("Y: ",pos.y)
     print("Z: ", pos.z)
     print("Dir: ",pos.dir)
     return true
 end
- 
-function Forward()
-    if turtle.forward() then
-        return MovePos(moves.forward)
-    else
-        return false
-    end
-end
- 
-function Back()
-    if turtle.back() then
-        return MovePos(moves.backward)
-    else
-        return false
-    end
-end
- 
-function Up()
-    if turtle.up() then
-        return MovePos(moves.up)
-    else
-        return false
-    end
-end
- 
-function Down()
-    if turtle.down() then
-        return MovePos(moves.down)
-    else
-        return false
-    end
-end
 
+--------------
+-- Movement --
+--------------
+
+-- Makes the turtle turn to a specific direction and updates position file
 function TurnTo(dir)
-    currDir = GetPos().dir
+    local currDir = GetPos().dir
     if currDir == dir then
         return true
     elseif currDir < 4 then
@@ -115,13 +135,63 @@ function TurnTo(dir)
         end
         SetPosDir(currDir)
         return true
+    else
+        return false
     end
 end
 
+-- Turns the turtle left
 function Left()
-    TurnTo((GetPos().dir - 1) % 4)
+    return TurnTo((GetPos().dir - 1) % 4)
+end
+
+-- Turns the turtle right
+function Right()
+    return TurnTo((GetPos().dir + 1) % 4)
+end
+
+-- Turns the turtle around
+function TurnAround()
+    Left()
+    return Left()
+end
+
+function Forward()
+    while not turtle.forward() do
+        if not turtle.attack() then
+            if not turtle.dig() then
+                return false
+            end
+        end
+    end
+
+    return MovePos(moves.forward)
 end
  
-function Right()
-    turtle.turnRight()
+function Back()
+    if turtle.back() then
+        return MovePos(moves.backward)
+    else
+        TurnAround()
+        if Forward() then TurnAround() else
+            TurnAround()
+            return false
+        end
+    end
+end
+ 
+function Up()
+    if turtle.up() then
+        return MovePos(moves.up)
+    else
+        return false
+    end
+end
+ 
+function Down()
+    if turtle.down() then
+        return MovePos(moves.down)
+    else
+        return false
+    end
 end
