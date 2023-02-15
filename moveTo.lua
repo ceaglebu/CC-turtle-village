@@ -1,12 +1,16 @@
 require("hTest")
 
-print("x: ")
-toX = tonumber(read())
-print("y: ")
-toY = tonumber(read())
-print("z: ")
-toZ = tonumber(read())
-print("Direction (north, south, east, west): ")
-toDir = read()
+tArgs = {...}
 
-MoveTo(createPos(toX, toY, toZ, directions.toDir))
+if #tArgs < 4 then
+   print("Usage: moveTo <x y z dir>") 
+end
+
+pos = {
+    x = tonumber(tArgs[1]),
+    y = tonumber(tArgs[2]),
+    z = tonumber(tArgs[3]),
+    dir = directions[tArgs[4]]
+}
+
+MoveTo(pos)
