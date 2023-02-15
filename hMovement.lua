@@ -43,6 +43,9 @@ end
 
 -- Retrieves turtle's current position from position statefile.
 function GetPos()
+    if not fs.exists(stateFiles.position) then
+        print("Position file does not exist")
+    end
     local file = fs.open(stateFiles.position, "r")
     local line = file.readLine()
     local pos = {}
@@ -232,7 +235,7 @@ function MoveTo(pos)
         while GetPos().y < pos.y do
             Up()
         end
-        while GetPos.y > pos.y do
+        while GetPos().y > pos.y do
             Down()
         end
     end
