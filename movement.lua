@@ -223,7 +223,7 @@ function MoveTo(pos)
         elseif currPos.z > pos.z then
             TurnTo(directions.north)
         end
-        while currPos.z ~= pos.z do
+        while GetPos().z ~= pos.z do
             Forward()
         end
     end
