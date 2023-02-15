@@ -247,10 +247,8 @@ end
 function MoveRel(pos)
     for k,v in pairs(pos) do
         pos[k] = pos[k] + GetPos()[k]
-        if k == "dir" then
-            pos[k] = pos[k] % 4
-        end
     end
-
+    
+    pos.dir = pos.dir % 4
     return MoveTo(pos)
 end
