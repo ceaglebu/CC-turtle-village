@@ -21,9 +21,7 @@ stateFiles = {
 ---------------
 
 directions = {
-    north = 0, east = 1, south = 2, west = 3,
-    --Reverse indexing
-    ["0"] = 0, ["1"] = 1, ["2"] = 2, ["3"] = 3
+    north = 0, east = 1, south = 2, west = 3
 }
 
 moves = {
@@ -244,4 +242,15 @@ function MoveTo(pos)
 
     TurnTo(pos.dir)
     return true
+end
+
+function MoveRel(pos)
+    for k,v in pairs(pos) do
+        pos[k] = pos[k] + GetPos()[k]
+        if k == "dir" then
+            pos[k] = pos[k] % 4
+        end
+    end
+
+    return MoveTo(pos)
 end
