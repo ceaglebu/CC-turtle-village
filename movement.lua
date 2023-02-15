@@ -75,6 +75,11 @@ function MovePos(move)
     return UpdatePos(newPos)
 end
 
+function createPos(x, y, z, dir)
+    local pos = {x=x, y=y, z=z, dir=dir}
+    return pos
+end
+
 -- Redundant functions for easier access to individual position elements
 function setPosX(x)
     local pos = GetPos()
@@ -181,17 +186,54 @@ function Back()
 end
  
 function Up()
-    if turtle.up() then
-        return MovePos(moves.up)
-    else
-        return false
+    while not turtle.up() do
+        if not turtle.digUp() then
+            return false
+        end
     end
+    return MovePos(moves.up)
 end
  
 function Down()
-    if turtle.down() then
-        return MovePos(moves.down)
-    else
-        return false
+    while not turtle.down() do
+        if not turtle.digDown() then
+            return false
+        end
+    end
+    return MovePos(moves.down)
+end
+
+function MoveTo(pos)
+    local currPos = GetPos()
+
+    if currPos.x ~= pos.x then
+        if currPos.x < pos.x then
+            TurnTo(directions.east)
+        elseif currPos.x > pos.x then
+            TurnTo(directions.west)
+        end
+        while GetPos().x ~= pos.x do
+            Forward()
+        end
+    end
+
+    if currPos.z ~= pos.z then
+        if currPos.z < pos.z then
+            TurnTo(directions.south)
+        elseif currPos.z > pos.z then
+            TurnTo(directions.north)
+        end
+        while GetPos().z ~= pos.z do
+            Forward()
+        end
+    end
+
+    if currPos.y ~= pos.y then
+        while GetPos().y < pos.y do
+            Up()
+        end
+        while GetPos.y > pos.y do
+            Down()
+        end
     end
 end
