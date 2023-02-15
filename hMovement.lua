@@ -239,4 +239,7 @@ function MoveTo(pos)
             Down()
         end
     end
+
+    TurnTo(pos.dir)
+    return true
 end
