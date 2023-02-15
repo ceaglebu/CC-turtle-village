@@ -1,4 +1,4 @@
-require("CC-turtle-village/tests/.testHeader")
+require("hTest")
 
 print("x: ")
 toX = tonumber(read())
