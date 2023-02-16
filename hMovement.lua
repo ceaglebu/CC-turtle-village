@@ -268,10 +268,10 @@ end
 
 function MoveRelFacing(pos)
     if pos.x < 0 then
-        TurnAround()
-        pos.x = -pos.x
+        Back(-pos.x)
+    elseif pos.x > 0 then
+        Forward(pos.x)
     end
-    Forward(pos.x)
     if pos.y > 0 then
         Up(pos.y)
     else
