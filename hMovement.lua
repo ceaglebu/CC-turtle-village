@@ -267,6 +267,8 @@ function MoveRelCoords(pos)
 end
 
 function MoveRelFacing(pos)
+    local initDir = GetPos().dir
+    
     if pos.x < 0 then
         Back(-pos.x)
     elseif pos.x > 0 then
@@ -284,5 +286,6 @@ function MoveRelFacing(pos)
         Left()
         Forward(pos.z)
     end
-    TurnTo((GetPos().dir + pos.dir) % 4)
+    
+    TurnTo((initDir + pos.dir) % 4)
 end
