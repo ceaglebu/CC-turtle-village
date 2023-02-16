@@ -280,4 +280,5 @@ function MoveRelFacing(pos)
         Left()
         Forward(pos.z)
     end
+    TurnTo((GetPos().dir + pos.dir) % 4)
 end
