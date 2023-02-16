@@ -13,4 +13,4 @@ pos = {
     dir = directions[tArgs[4]]
 }
 
-MoveRel(pos)
+MoveRelFacing(pos)

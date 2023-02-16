@@ -164,46 +164,62 @@ function TurnAround()
     return Left()
 end
 
-function Forward()
-    while not turtle.forward() do
-        if not turtle.attack() then
-            if not turtle.dig() then
+function Forward(ct)
+    ct = ct or 1;
+    for i = 1,ct do
+        while not turtle.forward() do
+            if not turtle.attack() then
+                if not turtle.dig() then
+                    return false
+                end
+            end
+        end
+        if not MovePos(moves.forward) then return false end
+    end
+    return true
+end
+ 
+function Back(ct)
+    ct = ct or 1
+    for i = 1,ct do
+        if turtle.back() then
+            if not MovePos(moves.backward) then return false end
+        else
+            TurnAround()
+            if Forward() then TurnAround() else
+                TurnAround()
                 return false
             end
         end
     end
-
-    return MovePos(moves.forward)
+    return true
 end
  
-function Back()
-    if turtle.back() then
-        return MovePos(moves.backward)
-    else
-        TurnAround()
-        if Forward() then TurnAround() else
-            TurnAround()
-            return false
+function Up(ct)
+    ct = ct or 1
+    for i = 1,ct do
+        while not turtle.up() do
+            if not turtle.digUp() then
+                return false
+            end
         end
+        if not MovePos(moves.up) then return false end
     end
+    
+    return true
 end
  
-function Up()
-    while not turtle.up() do
-        if not turtle.digUp() then
-            return false
+function Down(ct)
+    ct = ct or 1
+    for i = 1,ct do
+        while not turtle.down() do
+            if not turtle.digDown() then
+                return false
+            end
         end
+        if not MovePos(moves.down) then return false end
     end
-    return MovePos(moves.up)
-end
- 
-function Down()
-    while not turtle.down() do
-        if not turtle.digDown() then
-            return false
-        end
-    end
-    return MovePos(moves.down)
+    return true
 end
 
 function MoveTo(pos)
@@ -212,43 +228,56 @@ function MoveTo(pos)
     if currPos.x ~= pos.x then
         if currPos.x < pos.x then
             TurnTo(directions.east)
+            Forward(pos.x - currPos.x)
         elseif currPos.x > pos.x then
             TurnTo(directions.west)
-        end
-        while GetPos().x ~= pos.x do
-            Forward()
+            Forward(currPos.x - pos.x)
         end
     end
 
     if currPos.z ~= pos.z then
         if currPos.z < pos.z then
             TurnTo(directions.south)
+            Forward(pos.z - currPos.z)
         elseif currPos.z > pos.z then
             TurnTo(directions.north)
-        end
-        while GetPos().z ~= pos.z do
-            Forward()
+            Forward(currPos.z - pos.z)
         end
     end
 
     if currPos.y ~= pos.y then
-        while GetPos().y < pos.y do
-            Up()
-        end
-        while GetPos().y > pos.y do
-            Down()
-        end
+        Up(pos.y - currPos.y)
+        Down(currPos.y - pos.y)
     end
 
     TurnTo(pos.dir)
     return true
 end
 
-function MoveRel(pos)
-    for k,v in pairs(pos) do
-        pos[k] = pos[k] + GetPos()[k]
-    end
-    
-    pos.dir = pos.dir % 4
+--[[ 
+    Move relative to the turtle's position. Does not consider
+     direction turtle is facing, just uses in game coords.
+     Direction is not relative.
+]]--
+function MoveRelCoords(pos)
+    pos.x = pos.x + GetPos().x
+    pos.y = pos.y + GetPos().y
+    pos.z = pos.z + GetPos().z
     return MoveTo(pos)
+end
+
+function MoveRelFacing(pos)
+    Forward(pos.x)
+    if pos.y > 0 then
+        Up(pos.y)
+    else
+        Down(-pos.y)
+    end
+    if pos.z > 0 then
+        Right()
+        Forward(pos.z)
+    elseif pos.z < 0 then
+        Left()
+        Forward(pos.z)
+    end
 end
